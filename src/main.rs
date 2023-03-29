@@ -1,4 +1,4 @@
-use rand::random;
+use rand::{random, thread_rng, Rng};
 use ray_tracer::camera::Camera;
 use ray_tracer::hittable::HittableList;
 use ray_tracer::ray::Ray;
@@ -14,7 +14,7 @@ const IMAGE_HEIGHT: i32 = (IMAGE_WIDTH as f32 / ASPECT_RATIO) as i32;
 const MAX_COLOR: i32 = 255;
 
 // Camera
-const SAMPLES_PER_PIXEL: i32 = 1;
+const SAMPLES_PER_PIXEL: i32 = 100;
 
 fn main() {
     // World
@@ -32,8 +32,13 @@ fn main() {
         for i in 0..IMAGE_WIDTH {
             let mut pixel_color = Color::new(0., 0., 0.);
             for k in 0..SAMPLES_PER_PIXEL {
-                let u = i as f32 / (IMAGE_WIDTH - 1) as f32;
-                let v = j as f32 / (IMAGE_HEIGHT - 1) as f32;
+                // Anti-aliasing
+                let u = (i as f32 + random::<f32>()) / (IMAGE_WIDTH - 1) as f32;
+                let v = (j as f32 + random::<f32>()) / (IMAGE_HEIGHT - 1) as f32;
+
+                // // Uncomment if sample size is 1
+                // let u = i as f32 / (IMAGE_WIDTH - 1) as f32;
+                // let v = j as f32 / (IMAGE_HEIGHT - 1) as f32;
 
                 let ray = camera.get_ray(u, v);
                 pixel_color += ray_color(&ray, &world);
