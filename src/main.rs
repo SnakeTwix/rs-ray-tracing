@@ -1,7 +1,6 @@
 use rand::{random, thread_rng, Rng};
 use ray_tracer::camera::Camera;
 use ray_tracer::hittable::HittableList;
-use ray_tracer::ray::Ray;
 use ray_tracer::sphere::Sphere;
 use ray_tracer::vec3::{Color, Point3, Vec3};
 use ray_tracer::{ray_color, write_color_to_str, write_string_to_file};
@@ -9,12 +8,13 @@ use std::rc::Rc;
 
 // Image
 const ASPECT_RATIO: f32 = 16. / 9.;
-const IMAGE_WIDTH: i32 = 256 * 4;
+const IMAGE_WIDTH: i32 = 400;
 const IMAGE_HEIGHT: i32 = (IMAGE_WIDTH as f32 / ASPECT_RATIO) as i32;
 const MAX_COLOR: i32 = 255;
+const MAX_DEPTH: i32 = 50;
 
 // Camera
-const SAMPLES_PER_PIXEL: i32 = 100;
+const SAMPLES_PER_PIXEL: i32 = 200;
 
 fn main() {
     // World
@@ -41,7 +41,7 @@ fn main() {
                 // let v = j as f32 / (IMAGE_HEIGHT - 1) as f32;
 
                 let ray = camera.get_ray(u, v);
-                pixel_color += ray_color(&ray, &world);
+                pixel_color += ray_color(&ray, &world, MAX_DEPTH);
             }
 
             write_color_to_str(&mut image_out, pixel_color, SAMPLES_PER_PIXEL);

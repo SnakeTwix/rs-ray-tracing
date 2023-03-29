@@ -1,3 +1,6 @@
+use crate::random_num_in_range;
+use core::ops::Range;
+use rand::{random, thread_rng, Rng};
 use std::ops::{Add, AddAssign, Div, Mul, Neg, Sub};
 
 #[derive(Default, Clone, Copy, Debug)]
@@ -38,6 +41,28 @@ impl Vec3 {
     pub fn unit_vector(&self) -> Vec3 {
         let length = self.length();
         *self / length
+    }
+
+    pub fn random() -> Self {
+        Vec3::new(random(), random(), random())
+    }
+
+    pub fn random_range(range: Range<f32>) -> Vec3 {
+        let mut thread = thread_rng();
+
+        Vec3::new(
+            thread.gen_range(range.clone()),
+            thread.gen_range(range.clone()),
+            thread.gen_range(range),
+        )
+    }
+
+    pub fn random_min_max(min: f32, max: f32) -> Vec3 {
+        Vec3::new(
+            random_num_in_range(min, max),
+            random_num_in_range(min, max),
+            random_num_in_range(min, max),
+        )
     }
 }
 
