@@ -6,7 +6,7 @@ use std::rc::Rc;
 pub struct HitRecord {
     pub p: Point3,
     pub normal: Vec3,
-    pub t: f32,
+    pub t: f64,
     pub front_face: bool,
 }
 
@@ -26,7 +26,7 @@ impl HitRecord {
 }
 
 pub trait Hittable {
-    fn hit(&self, ray: &Ray, t_min: f32, t_max: f32, rec: &mut HitRecord) -> bool;
+    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64, rec: &mut HitRecord) -> bool;
 }
 
 #[derive(Default)]
@@ -55,7 +55,7 @@ impl HittableList {
 }
 
 impl Hittable for HittableList {
-    fn hit(&self, ray: &Ray, t_min: f32, t_max: f32, mut rec: &mut HitRecord) -> bool {
+    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64, rec: &mut HitRecord) -> bool {
         let mut temp_record = HitRecord::new();
         let mut hit_anything = false;
         let mut closest_so_far = t_max;

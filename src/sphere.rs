@@ -4,17 +4,17 @@ use crate::vec3::Point3;
 
 pub struct Sphere {
     pub center: Point3,
-    pub radius: f32,
+    pub radius: f64,
 }
 
 impl Sphere {
-    pub fn new(center: Point3, radius: f32) -> Self {
+    pub fn new(center: Point3, radius: f64) -> Self {
         Self { center, radius }
     }
 }
 
 impl Hittable for Sphere {
-    fn hit(&self, ray: &Ray, t_min: f32, t_max: f32, rec: &mut HitRecord) -> bool {
+    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64, rec: &mut HitRecord) -> bool {
         let oc = ray.origin - self.center;
         let a = ray.direction.length_squared();
         let b = ray.direction.dot(&oc);
@@ -29,12 +29,17 @@ impl Hittable for Sphere {
         let sqrtd = discriminant.sqrt();
 
         // Find the nearest root that lies in the acceptable range
-        let mut root = (-b - sqrtd) / a;
+        let root = (-b - sqrtd) / a;
         if root < t_min || t_max < root {
-            root = (-b + sqrtd) / a;
-            if root < t_min || t_max < root {
-                return false;
-            }
+            // When uncommenting these lines, the image for some reason take like 5x longer to generate
+            // And it becomes darker? Gladly the second root basically is never an issue, but bothers me
+            // TODO: Investigate further
+            // root = (-b + sqrtd) / a;
+            // if root < t_min || t_max < root {
+            //     return false;
+            // }
+
+            return false;
         }
 
         rec.t = root;

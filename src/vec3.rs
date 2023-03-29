@@ -5,28 +5,28 @@ use std::ops::{Add, AddAssign, Div, Mul, Neg, Sub};
 
 #[derive(Default, Clone, Copy, Debug)]
 pub struct Vec3 {
-    pub x: f32,
-    pub y: f32,
-    pub z: f32,
+    pub x: f64,
+    pub y: f64,
+    pub z: f64,
 }
 
 pub type Point3 = Vec3;
 pub type Color = Vec3;
 
 impl Vec3 {
-    pub fn new(x: f32, y: f32, z: f32) -> Self {
+    pub fn new(x: f64, y: f64, z: f64) -> Self {
         Vec3 { x, y, z }
     }
 
-    pub fn length(&self) -> f32 {
+    pub fn length(&self) -> f64 {
         self.length_squared().sqrt()
     }
 
-    pub fn length_squared(&self) -> f32 {
+    pub fn length_squared(&self) -> f64 {
         self.x * self.x + self.y * self.y + self.z * self.z
     }
 
-    pub fn dot(&self, rhs: &Vec3) -> f32 {
+    pub fn dot(&self, rhs: &Vec3) -> f64 {
         self.x * rhs.x + self.y * rhs.y + self.z * rhs.z
     }
 
@@ -47,7 +47,7 @@ impl Vec3 {
         Vec3::new(random(), random(), random())
     }
 
-    pub fn random_range(range: Range<f32>) -> Vec3 {
+    pub fn random_range(range: Range<f64>) -> Vec3 {
         let mut thread = thread_rng();
 
         Vec3::new(
@@ -57,7 +57,7 @@ impl Vec3 {
         )
     }
 
-    pub fn random_min_max(min: f32, max: f32) -> Vec3 {
+    pub fn random_min_max(min: f64, max: f64) -> Vec3 {
         Vec3::new(
             random_num_in_range(min, max),
             random_num_in_range(min, max),
@@ -98,15 +98,15 @@ impl Mul for Vec3 {
     }
 }
 
-impl Mul<f32> for Vec3 {
+impl Mul<f64> for Vec3 {
     type Output = Self;
 
-    fn mul(self, rhs: f32) -> Self::Output {
+    fn mul(self, rhs: f64) -> Self::Output {
         Self::new(self.x * rhs, self.y * rhs, self.z * rhs)
     }
 }
 
-impl Mul<Vec3> for f32 {
+impl Mul<Vec3> for f64 {
     type Output = Vec3;
 
     fn mul(self, rhs: Vec3) -> Self::Output {
@@ -114,11 +114,11 @@ impl Mul<Vec3> for f32 {
     }
 }
 
-impl Div<f32> for Vec3 {
+impl Div<f64> for Vec3 {
     type Output = Self;
 
-    fn div(self, rhs: f32) -> Self::Output {
-        (1.0 / rhs) * self
+    fn div(self, rhs: f64) -> Self::Output {
+        Self::new(self.x / rhs, self.y / rhs, self.z / rhs)
     }
 }
 

@@ -17,21 +17,15 @@ pub fn write_string_to_file(str: String) -> std::io::Result<()> {
 }
 
 pub fn write_color_to_str(str: &mut String, pixel_color: Color, samples_per_pixel: i32) {
-    let mut r = pixel_color.x;
-    let mut g = pixel_color.y;
-    let mut b = pixel_color.z;
-
-    let scale = 1.0 / samples_per_pixel as f32;
-    r = (r * scale).sqrt();
-    g = (g * scale).sqrt();
-    b = (b * scale).sqrt();
+    let scaled = pixel_color / samples_per_pixel as f64;
+    let gamma_adjusted = Color::new(scaled.x.sqrt(), scaled.y.sqrt(), scaled.z.sqrt());
 
     writeln!(
         str,
         "{:.0} {:.0} {:.0}",
-        255. * r.clamp(0., 1.),
-        255. * g.clamp(0., 1.),
-        255. * b.clamp(0., 1.),
+        255. * gamma_adjusted.x.clamp(0., 1.),
+        255. * gamma_adjusted.y.clamp(0., 1.),
+        255. * gamma_adjusted.z.clamp(0., 1.),
     )
     .expect("Couldn't write to string buffer");
 }
@@ -42,7 +36,7 @@ pub fn ray_color(r: &Ray, world: &impl Hittable, depth: i32) -> Color {
     }
 
     let mut rec = HitRecord::new();
-    if world.hit(r, 0., f32::INFINITY, &mut rec) {
+    if world.hit(r, 0.001, f64::INFINITY, &mut rec) {
         let target = rec.p + rec.normal + random_unit_vector();
         return 0.5 * ray_color(&Ray::new(rec.p, target - rec.p), world, depth - 1);
     }
@@ -55,11 +49,9 @@ pub fn ray_color(r: &Ray, world: &impl Hittable, depth: i32) -> Color {
 fn random_in_unit_sphere() -> Vec3 {
     loop {
         let p = Vec3::random_range(-1.0..1.0);
-        if p.length_squared() >= 1. {
-            continue;
+        if p.length_squared() < 1. {
+            return p;
         }
-
-        return p;
     }
 }
 
@@ -67,6 +59,6 @@ fn random_unit_vector() -> Vec3 {
     random_in_unit_sphere().unit_vector()
 }
 
-pub fn random_num_in_range(min: f32, max: f32) -> f32 {
-    min + (max - min) * fastrand::f32()
+pub fn random_num_in_range(min: f64, max: f64) -> f64 {
+    min + (max - min) * fastrand::f64()
 }

@@ -7,14 +7,14 @@ use ray_tracer::{ray_color, write_color_to_str, write_string_to_file};
 use std::rc::Rc;
 
 // Image
-const ASPECT_RATIO: f32 = 16. / 9.;
-const IMAGE_WIDTH: i32 = 400;
-const IMAGE_HEIGHT: i32 = (IMAGE_WIDTH as f32 / ASPECT_RATIO) as i32;
+const ASPECT_RATIO: f64 = 16. / 9.;
+const IMAGE_WIDTH: i32 = 256 * 4;
+const IMAGE_HEIGHT: i32 = (IMAGE_WIDTH as f64 / ASPECT_RATIO) as i32;
 const MAX_COLOR: i32 = 255;
 const MAX_DEPTH: i32 = 50;
 
 // Camera
-const SAMPLES_PER_PIXEL: i32 = 200;
+const SAMPLES_PER_PIXEL: i32 = 100;
 
 fn main() {
     // World
@@ -31,14 +31,14 @@ fn main() {
         println!("Scanlines remaining: {j}");
         for i in 0..IMAGE_WIDTH {
             let mut pixel_color = Color::new(0., 0., 0.);
-            for k in 0..SAMPLES_PER_PIXEL {
+            for _ in 0..SAMPLES_PER_PIXEL {
                 // Anti-aliasing
-                let u = (i as f32 + random::<f32>()) / (IMAGE_WIDTH - 1) as f32;
-                let v = (j as f32 + random::<f32>()) / (IMAGE_HEIGHT - 1) as f32;
+                let u = (i as f64 + random::<f64>()) / (IMAGE_WIDTH - 1) as f64;
+                let v = (j as f64 + random::<f64>()) / (IMAGE_HEIGHT - 1) as f64;
 
                 // // Uncomment if sample size is 1
-                // let u = i as f32 / (IMAGE_WIDTH - 1) as f32;
-                // let v = j as f32 / (IMAGE_HEIGHT - 1) as f32;
+                // let u = i as f64 / (IMAGE_WIDTH - 1) as f64;
+                // let v = j as f64 / (IMAGE_HEIGHT - 1) as f64;
 
                 let ray = camera.get_ray(u, v);
                 pixel_color += ray_color(&ray, &world, MAX_DEPTH);
