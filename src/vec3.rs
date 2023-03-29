@@ -1,6 +1,6 @@
-use std::ops::{Add, Div, Mul, Neg, Sub};
+use std::ops::{Add, AddAssign, Div, Mul, Neg, Sub};
 
-#[derive(Default)]
+#[derive(Default, Clone, Copy, Debug)]
 pub struct Vec3 {
     pub x: f32,
     pub y: f32,
@@ -24,7 +24,7 @@ impl Vec3 {
     }
 
     pub fn dot(&self, rhs: &Vec3) -> f32 {
-        self.x * rhs.x + self.y + rhs.y + self.z + rhs.z
+        self.x * rhs.x + self.y * rhs.y + self.z * rhs.z
     }
 
     pub fn cross(&self, rhs: &Vec3) -> Vec3 {
@@ -35,9 +35,9 @@ impl Vec3 {
         )
     }
 
-    pub fn unit_vector(self) -> Vec3 {
+    pub fn unit_vector(&self) -> Vec3 {
         let length = self.length();
-        self / length
+        *self / length
     }
 }
 
@@ -94,5 +94,13 @@ impl Div<f32> for Vec3 {
 
     fn div(self, rhs: f32) -> Self::Output {
         (1.0 / rhs) * self
+    }
+}
+
+impl AddAssign for Vec3 {
+    fn add_assign(&mut self, rhs: Self) {
+        self.x += rhs.x;
+        self.y += rhs.y;
+        self.z += rhs.z;
     }
 }
