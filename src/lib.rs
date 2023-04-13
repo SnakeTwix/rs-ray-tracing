@@ -1,5 +1,6 @@
 pub mod camera;
 pub mod hittable;
+pub mod material;
 pub mod ray;
 pub mod sphere;
 pub mod vec3;
@@ -37,8 +38,16 @@ pub fn ray_color(r: &Ray, world: &impl Hittable, depth: i32) -> Color {
 
     let mut rec = HitRecord::new();
     if world.hit(r, 0.001, f64::INFINITY, &mut rec) {
-        let target = rec.p + rec.normal + random_unit_vector();
-        return 0.5 * ray_color(&Ray::new(rec.p, target - rec.p), world, depth - 1);
+        let mut scattered = Ray::default();
+        let mut attenuation = Color::default();
+
+        let material = rec.material.clone();
+
+        if material.scatter(r, &mut rec, &mut attenuation, &mut scattered) {
+            return attenuation * ray_color(&scattered, world, depth - 1);
+        }
+
+        return Color::new(0., 0., 0.);
     }
 
     let unit_direction = r.direction.unit_vector();
@@ -59,6 +68,23 @@ fn random_unit_vector() -> Vec3 {
     random_in_unit_sphere().unit_vector()
 }
 
-pub fn random_num_in_range(min: f64, max: f64) -> f64 {
-    min + (max - min) * fastrand::f64()
+fn random_in_hemisphere(normal: &Vec3) -> Vec3 {
+    let in_unit_sphere = random_in_unit_sphere();
+    if in_unit_sphere.dot(normal) > 0. {
+        in_unit_sphere
+    } else {
+        -in_unit_sphere
+    }
+}
+
+pub fn reflect(v: Vec3, normal: Vec3) -> Vec3 {
+    v - 2. * v.dot(&normal) * normal
+}
+
+pub fn refract(uv: Vec3, n: Vec3, etai_over_etat: f64) -> Vec3 {
+    let cos_theta = (-uv).dot(&n).min(-1.);
+    let r_out_perp = etai_over_etat * (uv + cos_theta * n);
+    let r_out_parallel = -(1. - r_out_perp.length_squared()).abs().sqrt() * n;
+
+    r_out_perp + r_out_parallel
 }

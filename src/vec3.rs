@@ -1,4 +1,3 @@
-use crate::random_num_in_range;
 use core::ops::Range;
 use rand::{random, thread_rng, Rng};
 use std::ops::{Add, AddAssign, Div, Mul, Neg, Sub};
@@ -58,11 +57,18 @@ impl Vec3 {
     }
 
     pub fn random_min_max(min: f64, max: f64) -> Vec3 {
+        let mut thread = thread_rng();
+
         Vec3::new(
-            random_num_in_range(min, max),
-            random_num_in_range(min, max),
-            random_num_in_range(min, max),
+            thread.gen_range(min..max),
+            thread.gen_range(min..max),
+            thread.gen_range(min..max),
         )
+    }
+
+    pub fn near_zero(&self) -> bool {
+        const S: f64 = 1e-8;
+        self.x.abs() < S && self.y.abs() < S && self.z.abs() < S
     }
 }
 
